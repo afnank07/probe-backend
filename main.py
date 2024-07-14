@@ -182,5 +182,7 @@ async def analyze_crypto(request: MetricRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000)
+    # import uvicorn
+    # uvicorn.run(app, host="0.0.0.0", port=10000)
+    import waitress
+    waitress.serve(app, host="0.0.0.0", port=10000)
