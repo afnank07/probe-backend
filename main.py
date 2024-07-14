@@ -2,7 +2,6 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.wsgi import WSGIMiddleware
 from pydantic import BaseModel, validator
 from typing import List
 from dotenv import load_dotenv
@@ -19,12 +18,11 @@ import asyncio
 load_dotenv()
 
 app = FastAPI()
-wsgi_app = WSGIMiddleware(app)
 
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS").split(',')
 
 # Add CORS middleware
-wsgi_app.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,  # Allows the frontend origin
     allow_credentials=True,
@@ -152,7 +150,7 @@ async def get_claude_analysis(image_base64, metric_names, token):
     )
     return message.content[0].text
 
-@wsgi_app.post("/analyze")
+@app.post("/analyze")
 async def analyze_crypto(request: MetricRequest):
     try:
         startDate = datetime.strptime(request.startDate, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -185,6 +183,6 @@ async def analyze_crypto(request: MetricRequest):
 
 # if __name__ == "__main__":
     # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=10000)
+    # # uvicorn.run(app, host="0.0.0.0", port=10000)
     # import waitress
-    # waitress.serve(wsgi_app, host="0.0.0.0", port=10000)
+    # waitress.serve(app, host="0.0.0.0", port=10000)
